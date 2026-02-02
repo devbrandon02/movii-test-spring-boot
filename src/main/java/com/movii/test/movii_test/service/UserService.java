@@ -10,6 +10,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Servicio encargado de la gestión de usuarios.
+ * Proporciona lógica para la creación de usuarios, validaciones y
+ * sincronización con CleverTap.
+ */
 @Service
 public class UserService {
 
@@ -23,6 +28,15 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+    /**
+     * Crea un nuevo usuario a partir de un DTO, realiza validaciones y lo
+     * sincroniza con CleverTap.
+     * 
+     * @param userDTO Los datos del usuario a crear.
+     * @return El usuario creado en formato DTO.
+     * @throws IllegalArgumentException si el usuario ya existe por identidad o
+     *                                  email.
+     */
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
@@ -41,6 +55,15 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
+    /**
+     * Crea un nuevo usuario a partir de una entidad, realiza validaciones y lo
+     * sincroniza con CleverTap.
+     * 
+     * @param user La entidad del usuario a crear.
+     * @return La entidad del usuario guardada.
+     * @throws IllegalArgumentException si el usuario ya existe por identidad o
+     *                                  email.
+     */
     @Transactional
     public User createUser(User user) {
         if (userRepository.existsByIdentity(user.getIdentity())) {
@@ -57,6 +80,11 @@ public class UserService {
         return savedUser;
     }
 
+    /**
+     * Sube el perfil del usuario a CleverTap de forma asíncrona.
+     * 
+     * @param user El usuario a sincronizar.
+     */
     @Async
     protected void uploadToCleverTap(User user) {
         cleverTapClient.uploadProfile(user);

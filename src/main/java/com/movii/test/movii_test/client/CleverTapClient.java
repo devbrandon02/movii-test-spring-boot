@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Cliente para la integración con la API REST de CleverTap.
+ * Se encarga de subir perfiles y eventos de usuario hacia la plataforma.
+ */
 @Component
 public class CleverTapClient {
 
@@ -42,6 +46,11 @@ public class CleverTapClient {
         return headers;
     }
 
+    /**
+     * Sube un perfil de usuario a CleverTap.
+     * 
+     * @param user Entidad de usuario con los datos a subir.
+     */
     public void uploadProfile(User user) {
         String url = apiUrl + "/upload";
 
@@ -68,6 +77,11 @@ public class CleverTapClient {
         }
     }
 
+    /**
+     * Sube un evento de usuario a CleverTap.
+     * 
+     * @param event Entidad de evento con los datos y el usuario asociado.
+     */
     public void uploadEvent(Event event) {
         String url = apiUrl + "/upload";
 

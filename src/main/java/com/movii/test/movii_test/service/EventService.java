@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Servicio encargado de la gestión de eventos de usuarios.
+ * Permite registrar eventos localmente y sincronizarlos con CleverTap.
+ */
 @Service
 public class EventService {
 
@@ -27,6 +31,13 @@ public class EventService {
         this.cleverTapClient = cleverTapClient;
     }
 
+    /**
+     * Registra un evento para un usuario identificado por su ID interno.
+     * 
+     * @param userId ID del usuario.
+     * @param event  Objeto de evento a registrar.
+     * @return El evento guardado.
+     */
     @Transactional
     public Event createEvent(Long userId, Event event) {
         User user = userRepository.findById(userId)
@@ -49,6 +60,12 @@ public class EventService {
         return eventRepository.findByUserId(userId);
     }
 
+    /**
+     * Obtiene todos los eventos de un usuario basándose en su identidad (C.C.).
+     * 
+     * @param userIdentity Identidad del usuario.
+     * @return Lista de eventos en formato DTO.
+     */
     public List<EventDTO> getUserEvents(String userIdentity) {
         User user = userRepository.findByIdentity(userIdentity)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with identity: " + userIdentity));
@@ -65,6 +82,12 @@ public class EventService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    /**
+     * Crea un evento a partir de un objeto DTO, lo guarda y lo sincroniza con
+     * CleverTap.
+     * 
+     * @param eventDTO Datos del evento.
+     */
     public void createEvent(EventDTO eventDTO) {
         User user = userRepository.findByIdentity(eventDTO.getUserId())
                 .orElseThrow(
